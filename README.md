@@ -195,8 +195,6 @@ docker compose down
 
 Приём из Kafka имеет семантику at-least-once. Идемпотентный producer не делает весь pipeline exactly-once, поэтому дополнительно используются дедупликация событий и идемпотентные пересчёты. SQL retention сканирует историю: это понятно для домашнего задания, но на больших объёмах понадобилась бы отдельная таблица первых просмотров. Старые версии агрегатов пока сохраняются для разбора пересчётов.
 
-Подробное объяснение для защиты: [docs/DEFENSE.txt](docs/DEFENSE.txt).
-
 ## Документация, использованная при настройке
 
 - [ClickHouse: AvroConfluent](https://clickhouse.com/docs/reference/formats/Avro/AvroConfluent)
