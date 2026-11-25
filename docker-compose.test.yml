@@ -1,0 +1,21 @@
+services:
+  producer:
+    ports: !reset []
+  aggregation:
+    ports: !reset []
+    environment:
+      SCHEDULER_ENABLED: 'false'
+  generator:
+    environment:
+      GENERATOR_ENABLED: 'false'
+      SEED_HISTORY: 'false'
+  schema-registry:
+    ports: !reset []
+  clickhouse:
+    ports: !reset []
+  postgres:
+    ports: !reset []
+  minio:
+    ports: !reset []
+  grafana:
+    ports: !reset []

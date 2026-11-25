@@ -1,0 +1,294 @@
+{
+  "id": null,
+  "uid": "online-cinema",
+  "title": "Online Cinema Analytics",
+  "schemaVersion": 40,
+  "version": 1,
+  "editable": false,
+  "timezone": "utc",
+  "refresh": "30s",
+  "time": {
+    "from": "now-14d",
+    "to": "now"
+  },
+  "tags": [
+    "cinema",
+    "homework-5"
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Retention Cohort Heatmap, %",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 11
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "table",
+          "format": 1,
+          "rawSql": "SELECT toString(metric_date) AS Cohort, maxIf(value, metric_name = 'cohort_size') AS Users,\nround(maxIf(value, metric_name = 'retention_day_0') * 100, 1) AS `Day 0`,\nround(maxIf(value, metric_name = 'retention_day_1') * 100, 1) AS `Day 1`,\nround(maxIf(value, metric_name = 'retention_day_2') * 100, 1) AS `Day 2`,\nround(maxIf(value, metric_name = 'retention_day_3') * 100, 1) AS `Day 3`,\nround(maxIf(value, metric_name = 'retention_day_4') * 100, 1) AS `Day 4`,\nround(maxIf(value, metric_name = 'retention_day_5') * 100, 1) AS `Day 5`,\nround(maxIf(value, metric_name = 'retention_day_6') * 100, 1) AS `Day 6`,\nround(maxIf(value, metric_name = 'retention_day_7') * 100, 1) AS `Day 7`\nFROM cinema.daily_metrics WHERE $__dateFilter(metric_date) GROUP BY metric_date HAVING Users > 0 ORDER BY metric_date",
+          "pluginVersion": "4.8.2"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "md",
+        "footer": {
+          "show": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "min": 0,
+          "max": 100,
+          "noValue": "",
+          "color": {
+            "mode": "continuous-RdYlGr"
+          },
+          "custom": {
+            "cellOptions": {
+              "type": "color-background"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cohort"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Users"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      "description": "Когорта по первому VIEW_STARTED. Возврат: любое событие в точный день жизни. Ненаступившие или незавершённые дни пустые."
+    },
+    {
+      "id": 2,
+      "title": "DAU",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "format": 0,
+          "rawSql": "SELECT toDateTime(metric_date, 'UTC') AS time, value * 1 AS value FROM cinema.daily_metrics WHERE metric_name = 'dau' AND $__dateFilter(metric_date) ORDER BY metric_date",
+          "pluginVersion": "4.8.2"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "Конверсия просмотра, %",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 11,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "format": 0,
+          "rawSql": "SELECT toDateTime(metric_date, 'UTC') AS time, value * 100 AS value FROM cinema.daily_metrics WHERE metric_name = 'conversion' AND $__dateFilter(metric_date) ORDER BY metric_date",
+          "pluginVersion": "4.8.2"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "Среднее время завершённого просмотра",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "format": 0,
+          "rawSql": "SELECT toDateTime(metric_date, 'UTC') AS time, value * 1 AS value FROM cinema.daily_metrics WHERE metric_name = 'avg_watch_seconds' AND $__dateFilter(metric_date) ORDER BY metric_date",
+          "pluginVersion": "4.8.2"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "title": "Топ фильмов по начатым просмотрам",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "clickhouse"
+          },
+          "editorType": "sql",
+          "queryType": "table",
+          "format": 1,
+          "rawSql": "SELECT dimension AS Movie, sum(value) AS Views FROM cinema.daily_metrics WHERE metric_name = 'movie_views' AND $__dateFilter(metric_date) GROUP BY dimension ORDER BY Views DESC, Movie LIMIT 10",
+          "pluginVersion": "4.8.2"
+        }
+      ],
+      "options": {},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "annotations": {
+    "list": []
+  },
+  "templating": {
+    "list": []
+  }
+}

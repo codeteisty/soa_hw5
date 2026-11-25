@@ -1,0 +1,11 @@
+<clickhouse>
+    <timezone>UTC</timezone>
+    <max_server_memory_usage>600000000</max_server_memory_usage>
+    <mark_cache_size>33554432</mark_cache_size>
+    <uncompressed_cache_size>16777216</uncompressed_cache_size>
+    <background_pool_size>16</background_pool_size>
+    <background_schedule_pool_size>16</background_schedule_pool_size>
+    <background_message_broker_schedule_pool_size>16</background_message_broker_schedule_pool_size>
+    <logger><level>warning</level><console>true</console></logger>
+    <kafka><auto_offset_reset>earliest</auto_offset_reset></kafka>
+</clickhouse>

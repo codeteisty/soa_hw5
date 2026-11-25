@@ -1,0 +1,10 @@
+name: Pipeline tests
+on: [push, pull_request]
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test isolated stack and broker failure
+        run: ./scripts/test.sh
